@@ -1,8 +1,13 @@
+// Jimmy Liu
+// Data Structures
+// Jan 11th 2016
 
 #include <array>
 #include <iostream>
 #include <string>
 #include <memory>
+#include <iomanip>
+#include <fstream>
 
 using namespace std;
 
@@ -55,12 +60,12 @@ template<typename T>
 class ArrayBag : public BagInterface<T>
 {
 private:
-	unique_ptr<T[]> items;      // Array of bag items
+	unique_ptr<T[]> items;      		   // Array of bag items
 	int itemCount;                         // Current count of bag items 
 	int maxItems;                          // Max capacity of the bag
 public:
 	ArrayBag(int capacity = DEFAULT_CAPACITY) : itemCount(0), maxItems(capacity)
-	{
+	{	
 		items = unique_ptr<T[]>(new T[capacity]);
 	}  // end default constructor
 	int getCurrentSize() const
@@ -157,34 +162,40 @@ public:
 		stream << endl << endl;
 		return stream;
 	}  // end displayBag
+	void readFile() {
+		string line;
+		ifstream myfile ("Words.txt");
+	  	if (myfile.is_open()) {
+	  		while (myfile >> line) {
+
+		  		if (itemCount < maxItems) {
+		  			//cout << line << endl;
+		  			add(line);
+		  			if (itemCount == maxItems) {
+		  				unique_ptr<T[]> temp = unique_ptr<T[]>(new T[maxItems * 2]);
+		  				for (int i = 0; i < maxItems; i++)
+							temp[i] = items[i];
+						maxItems = maxItems * 2;
+						items = move(temp);
+		  			}
+		  		}
+
+		  	}
+		}
+		myfile.close();
+	}
 };
 
 void bagTester(ArrayBag<string>& bag)
 {
-	cout << "isEmpty: returns " << boolalpha << bag.isEmpty() << "; should be 1 (true)" << endl;
-	cout << bag;
+	//cout << "isEmpty: returns " << boolalpha << bag.isEmpty() << "; should be 1 (true)" << endl;
+	//cout << bag;
 
-	string numbers[] = 
-	{ 
-		"one", 
-		"two", 
-		"three", 
-		"four", 
-		"five", 
-		"one", 
-		"six",
-		"seven",
-		"eight"
-	};
-	cout << "Add items to the bag container: " << endl;
-	for (int i = 0; i < sizeof(numbers)/sizeof(numbers[0]); i++)
-	{
-		bag.add( numbers[i] );
-	}  // end for
+	bag.readFile();
 
 	cout << bag;
 
-	cout << "isEmpty: returns " << boolalpha << bag.isEmpty() << "; should be 0 (false)" << endl;
+	/*cout << "isEmpty: returns " << boolalpha << bag.isEmpty() << "; should be 0 (false)" << endl;
 	cout << "getCurrentSize: returns " << bag.getCurrentSize() << "; should be 9" << endl;
 	cout << "Try to add another entry: add(\"nine\") returns " << bag.add("nine") << endl;
 	cout << "contains(\"three\"): returns " << boolalpha << bag.contains("three") << "; should be 1 (true)" << endl;
@@ -194,39 +205,24 @@ void bagTester(ArrayBag<string>& bag)
 	cout << "getFrequencyOf(\"one\"): returns " << bag.getFrequencyOf("one") << " should be 1" << endl;
 	cout << "remove(\"one\"): returns " << boolalpha << bag.remove("one") << "; should be 1 (true)" << endl;
 	cout << "remove(\"one\"): returns " << boolalpha << bag.remove("one") << "; should be 0 (false)" << endl;
+	*/
 	cout << endl;
 
-	cout << bag;
+	//cout << bag;
 
-	cout << "After clearing the bag, ";
-	bag.clear();
+	//cout << "After clearing the bag, ";
+	//bag.clear();
 
-	cout << "isEmpty: returns " << boolalpha << bag.isEmpty() << "; should be 1 (true)" << endl;
+	//cout << "isEmpty: returns " << boolalpha << bag.isEmpty() << "; should be 1 (true)" << endl;
 }  // end bagTester
 
-void enableDebug(bool bvalue)
+int main()
 {
-	if (!bvalue) return;
-
-	int tmpFlag = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
-
-	// Turn on leak-checking bit.
-	tmpFlag |= _CRTDBG_LEAK_CHECK_DF;
-
-	// Turn off CRT block checking bit.
-	tmpFlag &= ~_CRTDBG_CHECK_CRT_DF;
-
-	// Set flag to the new value.
-	_CrtSetDbgFlag(tmpFlag);
-}
-
-void main()
-{
-	enableDebug(true);
 	ArrayBag<string> bag;
-	cout << "Testing the Array-Based Bag:" << endl;
-	cout << "The initial bag is empty." << endl;
+	//cout << "Testing the Array-Based Bag:" << endl;
+	//cout << "The initial bag is empty." << endl;
 	bagTester(bag);
 	cout << "All done!" << endl;
+	return 0;
 }  // end main
 
