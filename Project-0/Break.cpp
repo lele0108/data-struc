@@ -166,18 +166,11 @@ public:
 		string line;
 		ifstream myfile ("Words.txt");
 	  	if (myfile.is_open()) {
-	  		while (myfile >> line) {
-
-		  		if (itemCount < maxItems) {
+	  		while ( getline (myfile,line) ) {
+	  			//cout << line << endl;
+		  		if (itemCount < 10) {
+		  			cout << line << endl;
 		  			add(line);
-		  			if (itemCount == maxItems) {
-		  				unique_ptr<T[]> temp = unique_ptr<T[]>(new T[maxItems * 2]);
-		  				//for (int i = 0; i < maxItems; i++)
-						//	temp[i] = items[i];
-						temp = move(items);
-						maxItems = maxItems * 2;
-						items = move(temp);
-		  			}
 		  		}
 
 		  	}
@@ -185,6 +178,9 @@ public:
 			cout << "Unable to open file" << endl;
 		}
 		myfile.close();
+		for (int i = 0; i < 10; i++) {
+			cout << items[i] << endl;
+		}
 	}
 };
 
