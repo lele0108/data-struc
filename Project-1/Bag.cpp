@@ -5,9 +5,11 @@
 
 #include <string>
 #include <iostream>
+#include <sstream>
 #include <memory>
 #include <iomanip>
 #include <fstream>
+#include <cstring>
 using namespace std;
 
 #define BLANK " "
@@ -53,6 +55,24 @@ public:
 	@return  True if bag contains anEntry, or false otherwise. */
 	virtual bool contains(const T& anEntry) const = 0;
 }; // end BagInterface
+
+class Product {
+	private:
+		double price;
+		string name; 
+	public:
+		Product() {
+			price = -1.0;
+		}
+		Product(string a, double b) {
+			name = a;
+			price = b;
+		}
+		friend ostream& operator<<(ostream& os, const Product& pd) {
+    		os << pd.name << " " << pd.price;
+    		return os;
+		}
+};
 
 template <typename T>
 class Node
@@ -219,19 +239,18 @@ void bagTester()
 	ifstream myfile ("UProducts.csv");
 	if (myfile.is_open()) {
 		while (getline(myfile, line)) {
+			string temp[2];
+			istringstream ss(line);
+			getline(ss, temp[0], ',');
+			getline(ss, temp[1], ',');
+			Product hold (temp[0], atof(temp[1].c_str()));
+			cout << hold << endl;
 			bag.add(line);
 		}
 	}
 	myfile.close();
 
-	/*string numbers[] = { "one", "two", "three", "four", "five"};
-	cout << "Add 6 items to the bag: " << endl;
-	for (int i = 0; i < sizeof(numbers)/sizeof(numbers[0]); i++)
-	{
-		bag.add(numbers[i]);
-	}  // end for*/
-
-	cout << bag;
+	//cout << bag;
 
 }  // end bagTester
 
