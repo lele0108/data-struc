@@ -1,7 +1,13 @@
+// Jimmy (Sicong) Liu
+// Jan 20th 2016
+// Project 1
+// Implement DoublyLinkedList
 
 #include <string>
 #include <iostream>
 #include <memory>
+#include <iomanip>
+#include <fstream>
 using namespace std;
 
 #define BLANK " "
@@ -208,16 +214,22 @@ public:
 void bagTester() 
 {
 	DoublyLinkedBag<string> bag;
-	cout << "Testing the Link-Based Bag:" << endl;
-	cout << "isEmpty: returns " << bag.isEmpty() << "; should be 1 (true)" << endl;
-	cout << bag;
 
-	string numbers[] = { "one", "two", "three", "four", "five"};
+	string line;
+	ifstream myfile ("UProducts.csv");
+	if (myfile.is_open()) {
+		while (getline(myfile, line)) {
+			bag.add(line);
+		}
+	}
+	myfile.close();
+
+	/*string numbers[] = { "one", "two", "three", "four", "five"};
 	cout << "Add 6 items to the bag: " << endl;
 	for (int i = 0; i < sizeof(numbers)/sizeof(numbers[0]); i++)
 	{
 		bag.add(numbers[i]);
-	}  // end for
+	}  // end for*/
 
 	cout << bag;
 
