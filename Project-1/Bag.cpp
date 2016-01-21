@@ -44,16 +44,6 @@ public:
 	/** Removes all entries from this bag.
 	@post  Bag contains no items, and the count of items is 0. */
 	virtual void clear() = 0;
-
-	/** Counts the number of times a given entry appears in bag.
-	@param anEntry  The entry to be counted.
-	@return  The number of times anEntry appears in the bag. */
-	virtual int getFrequencyOf(const T& anEntry) const = 0;
-
-	/** Tests whether this bag contains a given entry.
-	@param anEntry  The entry to locate.
-	@return  True if bag contains anEntry, or false otherwise. */
-	virtual bool contains(const T& anEntry) const = 0;
 }; // end BagInterface
 
 class Product {
@@ -72,6 +62,9 @@ class Product {
     		os << pd.name << " " << pd.price;
     		return os;
 		}
+		bool operator== (const Product &one) {
+    		return (price == one.price && name == one.name); 
+    	}
 };
 
 template <typename T>
@@ -117,10 +110,10 @@ public:
 	{
 		return getItem();
 	}  // end operator *
-	friend ostream& operator << (ostream& stream, Node<T>& node)
+	friend ostream& operator << (ostream& os, Node<T>& node)
 	{
-		stream << node.getItem() << endl;
-		return stream;
+		os << node.getItem() << endl;
+		return os;
 	}  // end operator <<
 }; // end Node
 
@@ -169,42 +162,6 @@ public:
 	{
 		itemCount = 0;
 	}  // end clear
-	int getFrequencyOf(const T& anEntry) const
-	{
-		int frequency = 0;
-		int counter = 0;
-		shared_ptr<Node<T> > curPtr = headPtr;
-		while ((curPtr != nullptr) && (counter < itemCount))
-		{
-			if (anEntry == curPtr->getItem())
-			{
-				frequency++;
-			} // end if
-
-			counter++;
-			curPtr = curPtr->getNext();
-		} // end while
-		return frequency;
-	}  // end getFrequencyOf
-	bool contains(const T& anEntry) const
-	{
-		return (getPointerTo(anEntry) != nullptr);
-	}  // end contains
-	shared_ptr<Node<T> > getPointerTo(const T& anEntry) const
-	{
-		bool found = false;
-		shared_ptr<Node<T> > curPtr = headPtr;
-
-		while (!found && (curPtr != nullptr))
-		{
-			if (anEntry == curPtr->getItem())
-				found = true;
-			else
-				curPtr = curPtr->getNext();
-		} // end while
-
-		return curPtr;
-	} // end getPointerTo
 	/*friend ostream& operator << (ostream& stream, DoublyLinkedBag<string>& bag)
 	{
 		stream << "The bag contains " << bag.getCurrentSize() << " items:" << endl;
@@ -217,9 +174,9 @@ public:
 		cout << endl << endl;
 		return stream;
 	}  // end displayBag*/
-	friend ostream& operator << (ostream& stream, DoublyLinkedBag<string>& bag)
+	friend ostream& operator << (ostream& os, DoublyLinkedBag<T>& bag)
 	{
-		stream << "The bag contains " << bag.getCurrentSize() << " items:" << endl;
+		os << "The bag contains " << bag.getCurrentSize() << " items:" << endl;
 		shared_ptr<Node<T> > rover = bag.tailPtr;
 		while (rover != nullptr)
 		{
@@ -227,13 +184,13 @@ public:
 			rover = rover->getPrev();
 		}  // end for
 		cout << endl << endl;
-		return stream;
+		return os;
 	}  // end displayBag
 }; // end DoublyLinkedBag
 
 void bagTester() 
 {
-	DoublyLinkedBag<string> bag;
+	DoublyLinkedBag<Product> bag;
 
 	string line;
 	ifstream myfile ("UProducts.csv");
@@ -244,13 +201,12 @@ void bagTester()
 			getline(ss, temp[0], ',');
 			getline(ss, temp[1], ',');
 			Product hold (temp[0], atof(temp[1].c_str()));
-			cout << hold << endl;
-			bag.add(line);
+			bag.add(hold);
 		}
 	}
 	myfile.close();
 
-	//cout << bag;
+	cout << bag;
 
 }  // end bagTester
 
