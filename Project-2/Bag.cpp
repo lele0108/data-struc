@@ -45,6 +45,8 @@ public:
 	/** Removes all entries from this bag.
 	@post  Bag contains no items, and the count of items is 0. */
 	virtual void clear() = 0;
+	virtual bool search(const T& anEntry) const = 0;
+	virtual void sort() = 0;
 }; // end BagInterface
 
 class Product {
@@ -189,6 +191,13 @@ public:
 		} // end if
 		return canRemoveItem;
 	}  // end remove
+	bool search(const T& anEntry) const
+	{
+		return getPointerTo(anEntry);
+	}
+	void sort() {
+
+	}
 	void clear()
 	{
 		itemCount = 0;
