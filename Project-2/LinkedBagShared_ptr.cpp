@@ -53,7 +53,7 @@ class Node
 {
 private:
 	T item; // A data item
-	shared_ptr<Node<T>> next; // Pointer to next node
+	shared_ptr<Node<T> > next; // Pointer to next node
 public:
 	Node() : next(nullptr)
 	{
@@ -61,14 +61,14 @@ public:
 	Node(const T& anItem) : item(anItem), next(nullptr)
 	{
 	} // end constructor
-	Node(const T& anItem, unique_ptr<Node<T>> nextNodePtr) : item(anItem), next(nextNodePtr)
+	Node(const T& anItem, unique_ptr<Node<T> > nextNodePtr) : item(anItem), next(nextNodePtr)
 	{
 	} // end constructor
 	void setItem(const T& anItem)
 	{
 		item = anItem;
 	} // end setItem
-	void setNext(shared_ptr<Node<T>> nextNodePtr)
+	void setNext(shared_ptr<Node<T> > nextNodePtr)
 	{
 		next = nextNodePtr;
 	} // end setNext
@@ -76,7 +76,7 @@ public:
 	{
 		return item;
 	} // end getItem
-	shared_ptr<Node<T>> getNext() const
+	shared_ptr<Node<T> > getNext() const
 	{
 		return next;
 	} // end getNext
@@ -95,7 +95,7 @@ template<typename T>
 class LinkedBag : public BagInterface<T>
 {
 private:
-	shared_ptr<Node<T>> headPtr; // Pointer to first node
+	shared_ptr<Node<T> > headPtr; // Pointer to first node
 	int itemCount;           // Current count of bag items
 							 // Returns either a pointer to the node containing a given entry
 							 // or the null pointer if the entry is not in the bag.
@@ -106,18 +106,18 @@ public:
 	LinkedBag(const LinkedBag<T>& aBag)
 	{
 		itemCount = aBag.itemCount;
-		shared_ptr<Node<T>> origChainPtr = aBag.headPtr;  // Points to nodes in original chain
+		shared_ptr<Node<T> > origChainPtr = aBag.headPtr;  // Points to nodes in original chain
 
 		if (origChainPtr == nullptr)
 			headPtr = nullptr;  // Original bag is empty
 		else
 		{
 			// Copy first node
-			headPtr = shared_ptr<Node<T>>(new Node<T>());
+			headPtr = shared_ptr<Node<T> >(new Node<T>());
 			headPtr->setItem(origChainPtr->getItem());
 
 			// Copy remaining nodes
-			shared_ptr<Node<T>> newChainPtr = headPtr;      // Points to last node in new chain
+			shared_ptr<Node<T> > newChainPtr = headPtr;      // Points to last node in new chain
 			origChainPtr = origChainPtr->getNext();     // Advance original-chain pointer
 
 			while (origChainPtr != nullptr)
@@ -125,7 +125,7 @@ public:
 				// Get next item from original chain
 				T nextItem = origChainPtr->getItem();
 				// Create a new node containing the next item
-				shared_ptr<Node<T>> newNodePtr(new Node<T>(nextItem));
+				shared_ptr<Node<T> > newNodePtr(new Node<T>(nextItem));
 				// Link new node to end of new chain
 				newChainPtr->setNext(newNodePtr);
 				// Advance pointer to new last node
@@ -149,7 +149,7 @@ public:
 	{
 		// Add to beginning of chain: new node references rest of chain;
 		// (headPtr is null if chain is empty)        
-		shared_ptr<Node<T>> nextNodePtr(new Node<T>(newEntry));
+		shared_ptr<Node<T> > nextNodePtr(new Node<T>(newEntry));
 		nextNodePtr->setNext(headPtr);  // New node points to chain
 										//   Node<ItemType>* nextNodePtr = new Node<ItemType>(newEntry, headPtr); // alternate code
 
@@ -160,14 +160,14 @@ public:
 	}  // end add
 	bool remove(const T& anEntry)
 	{
-		shared_ptr<Node<T>> entryNodePtr = shared_ptr<Node<T>>(getPointerTo(anEntry));
+		shared_ptr<Node<T> > entryNodePtr = shared_ptr<Node<T> >(getPointerTo(anEntry));
 		bool canRemoveItem = !isEmpty() && (entryNodePtr != nullptr);
 		if (canRemoveItem)
 		{
 			// Copy data from first node to located node
 			entryNodePtr->setItem(headPtr->getItem());
 			// Delete first node
-			shared_ptr<Node<T>> nodeToDeletePtr = headPtr;
+			shared_ptr<Node<T> > nodeToDeletePtr = headPtr;
 			headPtr = headPtr->getNext();
 			itemCount--;
 		} // end if
@@ -181,7 +181,7 @@ public:
 	{
 		int frequency = 0;
 		int counter = 0;
-		shared_ptr<Node<T>> curPtr = headPtr;
+		shared_ptr<Node<T> > curPtr = headPtr;
 		while ((curPtr != nullptr) && (counter < itemCount))
 		{
 			if (anEntry == curPtr->getItem())
@@ -198,10 +198,10 @@ public:
 	{
 		return (getPointerTo(anEntry) != nullptr);
 	}  // end contains
-	shared_ptr<Node<T>> getPointerTo(const T& anEntry) const
+	shared_ptr<Node<T> > getPointerTo(const T& anEntry) const
 	{
 		bool found = false;
-		shared_ptr<Node<T>> curPtr = headPtr;
+		shared_ptr<Node<T> > curPtr = headPtr;
 
 		while (!found && (curPtr != nullptr))
 		{
@@ -216,7 +216,7 @@ public:
 	friend ostream& operator << (ostream& stream, LinkedBag<string>& bag)
 	{
 		stream << "The bag contains " << bag.getCurrentSize() << " items:" << endl;
-		shared_ptr<Node<T>> rover = bag.headPtr;
+		shared_ptr<Node<T> > rover = bag.headPtr;
 		while (rover != nullptr)
 		{
 			cout << *rover << BLANK;
@@ -283,25 +283,9 @@ void bagTester()
 	cout << "isEmpty: returns " << bag.isEmpty() << "; should be 1 (true)" << endl;
 }  // end bagTester
 
-void enableDebug(bool bvalue)
+int main()
 {
-	if (!bvalue) return;
-
-	int tmpFlag = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
-
-	// Turn on leak-checking bit.
-	tmpFlag |= _CRTDBG_LEAK_CHECK_DF;
-
-	// Turn off CRT block checking bit.
-	tmpFlag &= ~_CRTDBG_CHECK_CRT_DF;
-
-	// Set flag to the new value.
-	_CrtSetDbgFlag(tmpFlag);
-}
-
-void main()
-{
-	enableDebug(true);
 	copyConstructorTester();
 	bagTester();
+	return 0;
 }  // end main

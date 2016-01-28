@@ -1,7 +1,7 @@
 // Jimmy (Sicong) Liu
 // Jan 20th 2016
-// Project 1
-// Implement DoublyLinkedList
+// Project 2
+// Implement DoublyLinkedList, Insertion Sort
 
 #include <string>
 #include <iostream>
@@ -40,6 +40,7 @@ public:
 	@param anEntry  The entry to be removed.
 	@return  True if removal was successful, or false if not. */
 	//virtual bool remove(const T& anEntry) = 0;
+	virtual bool remove(const T& anEntry) = 0;
 
 	/** Removes all entries from this bag.
 	@post  Bag contains no items, and the count of items is 0. */
@@ -158,6 +159,36 @@ public:
 
 		return true;
 	}  // end add
+	shared_ptr<Node<T> > getPointerTo(const T& anEntry) const
+	{
+		bool found = false;
+		shared_ptr<Node<T> > curPtr = headPtr;
+
+		while (!found && (curPtr != nullptr))
+		{
+			if (curPtr->getItem() == anEntry)
+				found = true;
+			else
+				curPtr = curPtr->getNext();
+		} // end while
+
+		return curPtr;
+	} // end getPointerTo
+	bool remove(const T& anEntry)
+	{
+		shared_ptr<Node<T> > entryNodePtr = shared_ptr< Node<T> >(getPointerTo(anEntry));
+		bool canRemoveItem = !isEmpty() && (entryNodePtr != nullptr);
+		if (canRemoveItem)
+		{
+			// Copy data from first node to located node
+			entryNodePtr->setItem(headPtr->getItem());
+			// Delete first node
+			shared_ptr<Node<T> > nodeToDeletePtr = headPtr;
+			headPtr = headPtr->getNext();
+			itemCount--;
+		} // end if
+		return canRemoveItem;
+	}  // end remove
 	void clear()
 	{
 		itemCount = 0;
