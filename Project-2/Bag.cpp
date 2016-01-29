@@ -45,7 +45,6 @@ public:
 	/** Removes all entries from this bag.
 	@post  Bag contains no items, and the count of items is 0. */
 	virtual void clear() = 0;
-	virtual bool search(const T& anEntry) const = 0;
 	virtual void sort() = 0;
 }; // end BagInterface
 
@@ -67,6 +66,12 @@ class Product {
 		}
 		bool operator== (const Product &one) {
     		return (price == one.price && name == one.name); 
+    	}
+    	bool operator< (const Product &one) {
+    		return (price < one.price); 
+    	}
+    	bool operator> (const Product &one) {
+    		return (price > one.price); 
     	}
 };
 
@@ -191,13 +196,39 @@ public:
 		} // end if
 		return canRemoveItem;
 	}  // end remove
-	bool search(const T& anEntry) const
+	shared_ptr<Node<T> > search(const T& anEntry) const
 	{
 		return getPointerTo(anEntry);
 	}
 	void sort() {
+		shared_ptr<Node<T> > sorted = headPtr;
+		shared_ptr<Node<T> > compare = headPtr->getNext();
 
+		while (sorted != tailPtr) {
+			shared_ptr<Node<T> > temp = compare;
+			while (sorted > compare && sorted!= nullptr) {
+				swap(sorted, compare);
+				sorted = compare->getPrev();
+			}
+			sorted = temp;
+			compare = sorted->getNext();
+		}
 	}
+
+	void swap(shared_ptr<Node<T> > one, shared_ptr<Node<T> > two) {
+		shared_ptr<Node<T> > before = one->getPrev();
+		shared_ptr<Node<T> > after = two->getNext();
+		if (before != nullptr)
+			before->setNext(two);
+		if (after != nullptr)
+			after->setPrev(one);
+		two->setPrev(before);
+		one->setNext(after);
+
+		two->setNext(one);
+		one->setPrev(two);
+	}
+
 	void clear()
 	{
 		itemCount = 0;
@@ -233,6 +264,12 @@ void bagTester()
 		}
 	}
 	myfile.close();
+	/*Product one("Hand soap", 14.51);
+	Product two("Fruit", 6.24);
+	shared_ptr<Node<Product> > three = bag.search(one);
+	shared_ptr<Node<Product> > four = bag.search(two);
+	bag.swap(four, three);*/
+	bag.sort();
 
 	cout << bag;
 
