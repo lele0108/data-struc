@@ -206,7 +206,7 @@ public:
 
 		while (sorted != tailPtr) {
 			shared_ptr<Node<T> > temp = compare;
-			while (sorted > compare && sorted!= nullptr) {
+			while (sorted > compare) {
 				swap(sorted, compare);
 				sorted = compare->getPrev();
 			}
@@ -216,17 +216,23 @@ public:
 	}
 
 	void swap(shared_ptr<Node<T> > one, shared_ptr<Node<T> > two) {
-		shared_ptr<Node<T> > before = one->getPrev();
-		shared_ptr<Node<T> > after = two->getNext();
-		if (before != nullptr)
-			before->setNext(two);
-		if (after != nullptr)
-			after->setPrev(one);
-		two->setPrev(before);
-		one->setNext(after);
+		shared_ptr<Node<T> > beforeOne = one->getPrev();
+		shared_ptr<Node<T> > afterOne = one->getNext();
+		shared_ptr<Node<T> > beforeTwo = two->getPrev();
+		shared_ptr<Node<T> > afterTwo = two->getNext();
+		if (beforeOne != nullptr)
+			beforeOne->setNext(two);
+		if (afterTwo != nullptr)
+			afterTwo->setPrev(one);
 
-		two->setNext(one);
-		one->setPrev(two);
+		two->setNext(afterOne);
+		afterOne->setPrev(two);
+
+		one->setPrev(beforeTwo);
+		beforeTwo->setNext(one);
+
+		one->setNext(afterTwo);
+		two->setPrev(beforeOne);
 	}
 
 	void clear()
@@ -236,11 +242,11 @@ public:
 	friend ostream& operator << (ostream& os, DoublyLinkedBag<T>& bag)
 	{
 		os << "The bag contains " << bag.getCurrentSize() << " items:" << endl;
-		shared_ptr<Node<T> > rover = bag.tailPtr;
+		shared_ptr<Node<T> > rover = bag.headPtr;
 		while (rover != nullptr)
 		{
 			cout << *rover << BLANK;
-			rover = rover->getPrev();
+			rover = rover->getNext();
 		}  // end for
 		cout << endl << endl;
 		return os;
@@ -264,13 +270,13 @@ void bagTester()
 		}
 	}
 	myfile.close();
-	/*Product one("Hand soap", 14.51);
-	Product two("Fruit", 6.24);
+	Product one("Steak", 6.92);
+	Product two("Sponges", 5.71);
 	shared_ptr<Node<Product> > three = bag.search(one);
 	shared_ptr<Node<Product> > four = bag.search(two);
-	bag.swap(four, three);*/
-	bag.sort();
-
+	bag.swap(four, three);
+	//bag.sort();
+	
 	cout << bag;
 
 }  // end bagTester
