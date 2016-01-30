@@ -202,19 +202,24 @@ public:
 	}
 	void sort() {
 		shared_ptr<Node<T> > sorted = headPtr;
+		shared_ptr<Node<T> > rover = sorted;
 		shared_ptr<Node<T> > compare = headPtr->getNext();
 
 		while (sorted != tailPtr) {
-			shared_ptr<Node<T> > temp = compare;
-			while (sorted > compare) {
-				swap(sorted, compare);
-				sorted = compare->getPrev();
+			while (rover > compare) {
+				if (rover->getPrev() != nullptr)
+					rover = rover->getPrev();
 			}
-			sorted = temp;
+			swap(sorted, compare);
 			compare = sorted->getNext();
 		}
 	}
-
+	void insertAt(shared_ptr<Node<T> > before, shared_ptr<Node<T> > insert) {
+		insert->setPrev(before);
+		insert->setNext(before->getNext());
+		before->getNext()->setPrev(insert);
+		before->setNext(insert);
+	}
 	void swap(shared_ptr<Node<T> > one, shared_ptr<Node<T> > two) {
 		shared_ptr<Node<T> > beforeOne = one->getPrev();
 		shared_ptr<Node<T> > afterOne = one->getNext();
@@ -270,11 +275,11 @@ void bagTester()
 		}
 	}
 	myfile.close();
-	Product one("Steak", 6.92);
-	Product two("Sponges", 5.71);
+	Product one("Tuna", 19.81);
+	Product two("Cats", 5.00);
 	shared_ptr<Node<Product> > three = bag.search(one);
-	shared_ptr<Node<Product> > four = bag.search(two);
-	bag.swap(four, three);
+	shared_ptr<Node<Product> > four(new Node<Product>(two));
+	bag.insertAt(three, four);
 	//bag.sort();
 	
 	cout << bag;
