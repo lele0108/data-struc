@@ -187,11 +187,35 @@ public:
 		bool canRemoveItem = !isEmpty() && (entryNodePtr != nullptr);
 		if (canRemoveItem)
 		{
-			// Copy data from first node to located node
-			entryNodePtr->setItem(headPtr->getItem());
-			// Delete first node
-			shared_ptr<Node<T> > nodeToDeletePtr = headPtr;
-			headPtr = headPtr->getNext();
+			if (entryNodePtr == headPtr) {
+				headPtr = entryNodePtr->getNext();
+				headPtr->setPrev(nullptr);
+			} else if (entryNodePtr == tailPtr) {
+				tailPtr = entryNodePtr->getPrev();
+				tailPtr->setNext(nullptr);
+			} else {
+				entryNodePtr->getPrev()->setNext(entryNodePtr->getNext());
+				entryNodePtr->getNext()->setPrev(entryNodePtr->getPrev());
+			}
+			itemCount--;
+		} // end if
+		return canRemoveItem;
+	}  // end remove
+	bool removePtr(shared_ptr<Node<T> > entryNodePtr)
+	{
+		bool canRemoveItem = !isEmpty() && (entryNodePtr != nullptr);
+		if (canRemoveItem)
+		{
+			if (entryNodePtr == headPtr) {
+				headPtr = entryNodePtr->getNext();
+				headPtr->setPrev(nullptr);
+			} else if (entryNodePtr == tailPtr) {
+				tailPtr = entryNodePtr->getPrev();
+				tailPtr->setNext(nullptr);
+			} else {
+				entryNodePtr->getPrev()->setNext(entryNodePtr->getNext());
+				entryNodePtr->getNext()->setPrev(entryNodePtr->getPrev());
+			}
 			itemCount--;
 		} // end if
 		return canRemoveItem;
