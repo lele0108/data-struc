@@ -1,3 +1,8 @@
+// Jimmy Liu
+// Project-3
+// CIS 22B
+// 5 Feb 2016
+
 #include <string>
 #include <iostream>
 #include <array>
@@ -38,7 +43,7 @@ private:
 	T        item; // A data item
 	Node<T>* next; // Pointer to next node
 public:
-	Node<T>::Node() : next(nullptr)
+	Node() : next(nullptr)
 	{
 	} // end default constructor
 	Node(const T& anItem) : item(anItem), next(nullptr)
@@ -70,10 +75,16 @@ class LinkedStack : public StackInterface<T>
 {
 private:
 	Node<T>* topPtr; // Pointer to first node in the chain;
+	int maxSize; // Maximum size of stack
+	int top; // Size of stack
 public:
 	LinkedStack() : topPtr(nullptr)
 	{
 	}  // end default constructor
+	LinkedStack(int max) {
+		maxSize = max;
+		top = 0;
+	}
 	LinkedStack(const LinkedStack<T>& aStack)
 	{
 		// Point to nodes in original chain
@@ -127,10 +138,14 @@ public:
 	}  // end isEmpty
 	bool push(const T& newItem)
 	{
-		Node<T>* newNodePtr = new Node<T>(newItem, topPtr);
-		topPtr = newNodePtr;
-		newNodePtr = nullptr;
-
+		if (top == maxSize) {
+			cout << "Stack is overfilled" << endl;
+		} else {
+			Node<T>* newNodePtr = new Node<T>(newItem, topPtr);
+			topPtr = newNodePtr;
+			newNodePtr = nullptr;
+			top++;
+		}
 		return true;
 	}  // end push
 	bool pop()
@@ -146,9 +161,12 @@ public:
 			nodeToDeletePtr->setNext(nullptr);
 			delete nodeToDeletePtr;
 			nodeToDeletePtr = nullptr;
+			top--;
 
 			result = true;
-		}  // end if
+		} else {
+			cout << "Nothing to pop" << endl;
+		}
 
 		return result;
 	}  // end pop
@@ -162,49 +180,9 @@ public:
 	}  // end peek
 };
 
-void copyConstructorTester()
-{
-	LinkedStack<string> stack;
-	array<string,6> items =
-	{ 
-		string("zero"), 
-		string("one"), 
-		string("two"), 
-		string("three"), 
-		string("four"), 
-		string("five") 
-	};
-	for (int i = 0; i < items.size(); i++)
-	{
-		cout << "Pushing " << items[i] << endl;
-		bool success = stack.push(items[i]);
-		if (!success)
-			cout << "Failed to push " << items[i] << " onto the stack." << endl;
-	}
-	cout << "Stack contains, from top to bottom, five four three two one zero." << endl;
-
-	LinkedStack<string> copyOfStack(stack);
-	cout << "Copy of stack contains, from top to bottom, ";
-	while (!copyOfStack.isEmpty())
-	{
-		cout << " " << copyOfStack.peek();
-		copyOfStack.pop();
-	}
-	cout << "." << endl;
-
-	cout << "Original stack contains, from top to bottom,";
-	while (!copyOfStack.isEmpty())
-	{
-		cout << " " << stack.peek();
-		stack.pop();
-	}
-	cout << "." << endl;
-}  // end copyConstructorTester
-
 void stackTester()
 {
-	StackInterface<string>* stackPtr = new LinkedStack<string>();
-	cout << "\nTesting the Link-Based Stack:" << endl;
+	StackInterface<string>* stackPtr = new LinkedStack<string>(6);
 	array<string, 6> items =
 	{
 		string("zero"),
@@ -214,7 +192,6 @@ void stackTester()
 		string("four"),
 		string("five")
 	};
-	cout << "Empty: " << stackPtr->isEmpty() << endl;
 	for (int i = 0; i < items.size(); i++)
 	{
 		cout << "Pushing " << items[i] << endl;
@@ -223,24 +200,64 @@ void stackTester()
 			cout << "Failed to push " << items[i] << " onto the stack." << endl;
 	}
 
-	cout << "Empty?: " << stackPtr->isEmpty() << endl;
-
-	int i = 0;
 	while (!stackPtr->isEmpty())  // NEEDS TO BE 5 TO AVOID ASSERT ERROR
 	{
-		cout << "Loop " << i++ << endl;
 		cout << "peek1: " << stackPtr->peek() << endl;
 		cout << "pop: " << stackPtr->pop() << endl;
-		cout << "Empty: " << stackPtr->isEmpty() << endl;
 	}
-	cout << "Empty: " << stackPtr->isEmpty() << endl;
-
-	cout << "pop an empty stack: " << endl;
-	cout << "pop: " << stackPtr->pop() << endl; // nothing to pop!
 }  // end stackTester
 
-void main()
+
+int checkOperator(char hold) {
+	if (hold == '*' || hold == '+' || hold == '/' || hold == '-')
+		return 0;
+	else if (hold == '(' || hold == ')')
+		return 1;
+	return 2;
+}
+
+int precedence(char check) {
+	if (check == '*' || check == '/')
+		return 1;
+	else 
+		return 0;
+}
+
+void postFixTester() {
+	string test = "a-(b+c*d)/e";
+	string postFix = "";
+	StackInterface<char>* stackPtr = new LinkedStack<char>(100);
+	for (int i = 0; i < test.length(); i++) {
+		char hold = test.at(i);
+		if(checkOperator(hold) == 2) {
+			postFix.append(string(1, hold));
+		} else if (hold == '(') {
+			stackPtr->push(hold);
+		} else if (checkOperator(hold) == 0) {
+			while(!stackPtr->isEmpty() && stackPtr->peek() != '(' && precedence(hold) <= precedence(stackPtr->peek())) {
+				postFix.append(string(1, stackPtr->peek()));
+				stackPtr->pop();
+			}
+			stackPtr->push(hold);
+		} else if (hold == ')') {
+			while (stackPtr->peek() != '(') {
+				postFix.append(string(1, stackPtr->peek()));
+				stackPtr->pop();
+			}
+		} else {
+			
+		}
+	}
+	while (!stackPtr->isEmpty()) {
+		postFix.append(string(1, stackPtr->peek()));
+		stackPtr->pop();
+	}
+	cout << postFix << endl;
+} // end postFixTester
+
+int main()
 {
-	copyConstructorTester();
-	stackTester();
+	//stackTester();
+	postFixTester();
+	return 0;
 } 
