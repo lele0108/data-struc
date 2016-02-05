@@ -3,6 +3,7 @@
 // Project 2
 // Implement DoublyLinkedList, Insertion Sort
 
+#include "stdafx.h"
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -69,6 +70,9 @@ class Product {
     	}
     	bool operator< (const Product &one) {
     		return (price < one.price); 
+    	}
+    	bool operator<= (const Product &one) {
+    		return (price < one.price || price == one.price); 
     	}
     	bool operator> (const Product &one) {
     		return (price > one.price); 
@@ -216,7 +220,6 @@ public:
 				entryNodePtr->getPrev()->setNext(entryNodePtr->getNext());
 				entryNodePtr->getNext()->setPrev(entryNodePtr->getPrev());
 			}
-			itemCount--;
 		} // end if
 		return canRemoveItem;
 	}  // end remove
@@ -229,12 +232,26 @@ public:
 		shared_ptr<Node<T> > rover = sorted;
 		shared_ptr<Node<T> > compare = headPtr->getNext();
 
-		while (sorted != tailPtr) {
-			while (rover > compare) {
-				if (rover->getPrev() != nullptr)
-					rover = rover->getPrev();
+		while (compare != nullptr) {
+			while (rover != nullptr && rover->getItem() > compare->getItem()) {
+				rover = rover->getPrev();
+				if (rover == nullptr) {
+					add(compare->getItem());
+					removePtr(compare);
+					sorted = sorted->getPrev();
+					itemCount--;
+				}
+				else if (rover->getItem() <= compare->getItem()) {
+					if (rover->getItem() == compare->getItem()) {
+					}
+					shared_ptr<Node<T> > temp(new Node<T>(compare->getItem()));
+					removePtr(compare);
+					insertAt(rover, temp);
+					sorted = sorted->getPrev();
+				}
 			}
-			swap(sorted, compare);
+			sorted = sorted->getNext();
+			rover = sorted;
 			compare = sorted->getNext();
 		}
 	}
@@ -243,25 +260,6 @@ public:
 		insert->setNext(before->getNext());
 		before->getNext()->setPrev(insert);
 		before->setNext(insert);
-	}
-	void swap(shared_ptr<Node<T> > one, shared_ptr<Node<T> > two) {
-		shared_ptr<Node<T> > beforeOne = one->getPrev();
-		shared_ptr<Node<T> > afterOne = one->getNext();
-		shared_ptr<Node<T> > beforeTwo = two->getPrev();
-		shared_ptr<Node<T> > afterTwo = two->getNext();
-		if (beforeOne != nullptr)
-			beforeOne->setNext(two);
-		if (afterTwo != nullptr)
-			afterTwo->setPrev(one);
-
-		two->setNext(afterOne);
-		afterOne->setPrev(two);
-
-		one->setPrev(beforeTwo);
-		beforeTwo->setNext(one);
-
-		one->setNext(afterTwo);
-		two->setPrev(beforeOne);
 	}
 
 	void clear()
@@ -280,6 +278,15 @@ public:
 		cout << endl << endl;
 		return os;
 	}  // end displayBag
+	void test() {
+		shared_ptr<Node<T> > rover = headPtr;
+		while (rover != nullptr)
+		{
+			cout << *rover << BLANK;
+			rover = rover->getNext();
+		}  // end for
+		cout << endl << endl;
+	}
 }; // end DoublyLinkedBag
 
 void bagTester() 
@@ -299,14 +306,10 @@ void bagTester()
 		}
 	}
 	myfile.close();
-	Product one("Tuna", 19.81);
-	Product two("Cats", 5.00);
-	shared_ptr<Node<Product> > three = bag.search(one);
-	shared_ptr<Node<Product> > four(new Node<Product>(two));
-	bag.insertAt(three, four);
-	//bag.sort();
+	bag.sort();
 	
 	cout << bag;
+	system("pause");
 
 }  // end bagTester
 
