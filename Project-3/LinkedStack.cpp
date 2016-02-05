@@ -80,8 +80,11 @@ private:
 public:
 	LinkedStack() : topPtr(nullptr)
 	{
+		maxSize = 10000;
+		top = 0;
 	}  // end default constructor
 	LinkedStack(int max) {
+		topPtr = nullptr;
 		maxSize = max;
 		top = 0;
 	}
@@ -180,34 +183,6 @@ public:
 	}  // end peek
 };
 
-void stackTester()
-{
-	StackInterface<string>* stackPtr = new LinkedStack<string>(6);
-	array<string, 6> items =
-	{
-		string("zero"),
-		string("one"),
-		string("two"),
-		string("three"),
-		string("four"),
-		string("five")
-	};
-	for (int i = 0; i < items.size(); i++)
-	{
-		cout << "Pushing " << items[i] << endl;
-		bool success = stackPtr->push(items[i]);
-		if (!success)
-			cout << "Failed to push " << items[i] << " onto the stack." << endl;
-	}
-
-	while (!stackPtr->isEmpty())  // NEEDS TO BE 5 TO AVOID ASSERT ERROR
-	{
-		cout << "peek1: " << stackPtr->peek() << endl;
-		cout << "pop: " << stackPtr->pop() << endl;
-	}
-}  // end stackTester
-
-
 int checkOperator(char hold) {
 	if (hold == '*' || hold == '+' || hold == '/' || hold == '-')
 		return 0;
@@ -226,7 +201,7 @@ int precedence(char check) {
 void postFixTester() {
 	string test = "a-(b+c*d)/e";
 	string postFix = "";
-	StackInterface<char>* stackPtr = new LinkedStack<char>(100);
+	StackInterface<char>* stackPtr = new LinkedStack<char>(test.length());
 	for (int i = 0; i < test.length(); i++) {
 		char hold = test.at(i);
 		if(checkOperator(hold) == 2) {
@@ -244,8 +219,6 @@ void postFixTester() {
 				postFix.append(string(1, stackPtr->peek()));
 				stackPtr->pop();
 			}
-		} else {
-			
 		}
 	}
 	while (!stackPtr->isEmpty()) {
@@ -257,7 +230,6 @@ void postFixTester() {
 
 int main()
 {
-	//stackTester();
 	postFixTester();
 	return 0;
 } 
