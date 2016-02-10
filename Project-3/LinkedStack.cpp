@@ -3,6 +3,7 @@
 // CIS 22B
 // 5 Feb 2016
 
+#include "stdafx.h"
 #include <string>
 #include <iostream>
 #include <array>
@@ -226,6 +227,7 @@ void postFixTester() {
 		stackPtr->pop();
 	}
 	cout << postFix << endl;
+	system("pause");
 } // end postFixTester
 
 int main()
