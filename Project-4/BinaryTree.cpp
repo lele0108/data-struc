@@ -58,6 +58,8 @@ public:
 	@return  True if the addition is successful, or false not. */
 	virtual bool add(const T& newData) = 0;
 
+	virtual bool treeInsert(const T& newData) = 0;
+
 	/** Removes the node containing the given data item from this binary tree.
 	@param data  The data value to remove from the binary tree.
 	@return  True if the removal is successful, or false not. */
@@ -97,11 +99,12 @@ private:
 	T              item;           // Data portion
 	BinaryNode<T>* leftChildPtr;   // Pointer to left child
 	BinaryNode<T>* rightChildPtr;  // Pointer to right child
+	BinaryNode<T>* parentPtr;
 public:
 	BinaryNode() : item(nullptr), leftChildPtr(nullptr), rightChildPtr(nullptr)
 	{
 	}  // end default constructor
-	BinaryNode(const T& anItem) : item(anItem), leftChildPtr(nullptr), rightChildPtr(nullptr)
+	BinaryNode(const T& anItem) : item(anItem), leftChildPtr(nullptr), rightChildPtr(nullptr), parentPtr(nullptr)
 	{
 	}  // end constructor
 	BinaryNode(const T& anItem, BinaryNode<T>* leftPtr, BinaryNode<T>* rightPtr) : item(anItem), leftChildPtr(leftPtr), rightChildPtr(rightPtr)
@@ -127,6 +130,9 @@ public:
 	{
 		rightChildPtr = rightPtr;
 	}  // end setRightChildPtr
+	void setParentPtr(BinaryNode<T>* parent) {
+		parentPtr = parent;
+	}
 	BinaryNode<T>* getLeftChildPtr() const
 	{
 		return leftChildPtr;
@@ -134,7 +140,10 @@ public:
 	BinaryNode<T>* getRightChildPtr() const
 	{
 		return rightChildPtr;
-	}  // end getRightChildPtr		
+	}  // end getRightChildPtr	
+	BinaryNode<T>* getParentPtr() const {
+		return parentPtr;
+	}	
 }; // end BinaryNode
 
 template <typename T>
@@ -369,6 +378,31 @@ public:
 		rootPtr = balancedAdd(rootPtr, newNodePtr);
 		return true;
 	}  // end add
+	bool treeInsert(const T& newData) {
+		BinaryNode<T>* newNodePtr = new BinaryNode<T>(newData);
+		BinaryNode<T>* y = nullptr;
+		BinaryNode<T>* x = rootPtr;
+
+		while (x != nullptr) {
+			y = x;
+			if (newNodePtr->getItem() < x->getItem()) {
+				x = x->getLeftChildPtr();
+			} else {
+				x = x->getRightChildPtr();
+			}
+		}
+		newNodePtr->setParentPtr(y);
+		if (y == nullptr) {
+			rootPtr = newNodePtr;
+		} else if (newNodePtr->getItem() < y->getItem()) {
+			y->setLeftChildPtr(newNodePtr);
+		} else {
+			y->setRightChildPtr(newNodePtr);
+		}
+
+		return true;
+
+	} // end treeInsert
 	bool remove(const T& target)
 	{
 		bool isSuccessful = false;
@@ -413,7 +447,34 @@ public:
 	}  // end operator=
 }; // end BinaryNodeTree
 
-void display(string& anItem)
+class chrObject {
+	private:
+		int count;
+		char value;
+	public:
+		chrObject(char a) {
+			value = a;
+			count = 0;
+		}
+		void increment() {
+			count++;
+		}
+		friend ostream& operator<<(ostream& os, const chrObject& pd) {
+    		os << pd.value << " " << pd.count;
+    		return os;
+		}
+		bool operator== (const chrObject &one) {
+    		return (value == one.value); 
+    	}
+		bool operator> (const chrObject &one) {
+    		return (value > one.value); 
+    	}
+    	bool operator< (const chrObject &one) {
+    		return (value < one.value); 
+    	}
+};
+
+void display(chrObject& anItem)
 {
 	cout << "Displaying item - " << anItem << endl;
 }  // end display
@@ -428,16 +489,13 @@ void check(bool success)
 
 int main()
 {
-	BinaryTreeInterface<string>* tree1 = new BinaryNodeTree<string>();
+	BinaryTreeInterface<chrObject>* tree1 = new BinaryNodeTree<chrObject>();
 
-	tree1->add("10");
-	tree1->add("20");
-	tree1->add("30");
-	tree1->add("40");
-	tree1->add("50");
-	tree1->add("60");
-	tree1->add("70");
-	tree1->add("80");
+	chrObject test1('a');
+	chrObject test2('b');
+
+	tree1->treeInsert(test1);
+	tree1->treeInsert(test2);
 
 	cout << "Tree 1 Preorder: Should be 10 20 40 70 60 30 50 80\n";
 	tree1->preorderTraverse(display);
