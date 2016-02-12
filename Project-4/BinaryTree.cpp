@@ -1,7 +1,11 @@
 #include <stdexcept>
 #include <string>
 #include <iostream>
+#include <sstream>
 #include <algorithm>
+#include <iomanip>
+#include <fstream>
+#include <cstring>
 
 using namespace std;
 
@@ -491,8 +495,24 @@ int main()
 {
 	BinaryTreeInterface<chrObject>* tree1 = new BinaryNodeTree<chrObject>();
 
-	chrObject test1('a');
-	chrObject test2('b');
+	string line;
+	ifstream myfile ("Speech.txt");
+	if (myfile.is_open()) {
+		while (getline(myfile, line)) {
+
+			for (int i = 0; i < line.length(); i++)
+			{
+			    char chr = line[i];
+			    //cout << chr << endl;
+			    if (chr != ' ') {
+			    	chrObject temp(chr);
+			    	tree1->treeInsert(temp);
+			    }
+			}
+			cout << line << endl;
+		}
+	}
+	myfile.close();
 
 	tree1->treeInsert(test1);
 	tree1->treeInsert(test2);
