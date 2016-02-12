@@ -64,6 +64,8 @@ public:
 
 	virtual bool treeInsert(const T& newData) = 0;
 
+	virtual void incrementEntry(const T& newData) = 0;
+
 	/** Removes the node containing the given data item from this binary tree.
 	@param data  The data value to remove from the binary tree.
 	@return  True if the removal is successful, or false not. */
@@ -423,6 +425,16 @@ public:
 		else
 			throw NotFoundException("Entry not found in tree!");
 	}  // end getEntry
+	void incrementEntry(const T& anEntry) {
+		bool isSuccessful = false;
+		BinaryNode<T>* binaryNodePtr = findNode(rootPtr, anEntry, isSuccessful);
+
+		if (isSuccessful) {
+			binaryNodePtr->getItem().increment();
+		} else {
+
+		}
+	}
 	bool contains(const T& anEntry) const
 	{
 		bool isSuccessful = false;
@@ -458,7 +470,7 @@ class chrObject {
 	public:
 		chrObject(char a) {
 			value = a;
-			count = 0;
+			count = 1;
 		}
 		void increment() {
 			count++;
@@ -503,19 +515,21 @@ int main()
 			for (int i = 0; i < line.length(); i++)
 			{
 			    char chr = line[i];
-			    //cout << chr << endl;
-			    if (chr != ' ') {
+			    chr = tolower(chr);
+			    if (chr >= 'A' && chr <= 'z') {
 			    	chrObject temp(chr);
-			    	tree1->treeInsert(temp);
+			    	if (tree1->contains(temp)) {
+			    		cout << "found it" << endl;
+			    		tree1->incrementEntry(temp);
+			    	} else {	
+			    		tree1->treeInsert(temp);
+			    	}
 			    }
 			}
 			cout << line << endl;
 		}
 	}
 	myfile.close();
-
-	tree1->treeInsert(test1);
-	tree1->treeInsert(test2);
 
 	cout << "Tree 1 Preorder: Should be 10 20 40 70 60 30 50 80\n";
 	tree1->preorderTraverse(display);
