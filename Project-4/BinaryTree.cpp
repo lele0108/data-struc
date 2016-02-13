@@ -124,6 +124,9 @@ public:
 	{
 		return item;
 	}  // end getItem
+	T* getItemPtr() {
+		return &item;
+	}
 	bool isLeaf() const
 	{
 		return ((leftChildPtr == nullptr) && (rightChildPtr == nullptr));
@@ -430,7 +433,7 @@ public:
 		BinaryNode<T>* binaryNodePtr = findNode(rootPtr, anEntry, isSuccessful);
 
 		if (isSuccessful) {
-			binaryNodePtr->getItem().increment();
+			binaryNodePtr->getItemPtr()->increment();
 		} else {
 
 		}
@@ -522,6 +525,7 @@ int main()
 			    		cout << "found it" << endl;
 			    		tree1->incrementEntry(temp);
 			    	} else {	
+			    		cout << "new insert" << endl;
 			    		tree1->treeInsert(temp);
 			    	}
 			    }
