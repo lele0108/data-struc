@@ -2,6 +2,10 @@
 #include <string>
 #include <vector>
 #include <array>
+#include <iostream>
+#include <sstream>
+#include <fstream>
+#include <cstring>
 
 using namespace std;
 
@@ -153,6 +157,33 @@ public:
 			Traverse(hashTable[index],index);
 		}
 	}
+	int hashInsert(string key) {
+		int i = 0;
+		while (i != size) {
+			int j = HashGenerator(key);
+			if (hashTable[j].key.compare("0") == 0) {
+				hashTable[j] = key;
+				return j;
+			} else {
+				i++;
+			}
+		}
+		cout << "Hash Table Not Found" << endl;
+		return -1;
+	}
+	bool hashRemove(string key) {
+		int i = 0;
+		while (i != size) {
+			int j = HashGenerator(key);
+			if (hashTable[j].key.compare("0") == 0) {
+				hashTable[j] = 0;
+				return true;
+			} else {
+				i++;
+			}
+		}
+		return false;
+	}
 	Pair operator[] (int index)
 	{
 		return hashTable[index];
@@ -168,6 +199,6 @@ int main()
 	string sfindID = "20252502";  // Pair("20252502","Rosa","Arbute"),
 	Pair foundStudent = hashTable.Find(sfindID);
 	cout << foundStudent.value.slast << "\t" << foundStudent.value.sfirst << endl;
-	hashTable.Traverse(hashTable[0],0);
+	//hashTable.Traverse(hashTable[0],0);
 	return 0;
 }
