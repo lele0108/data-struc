@@ -6,66 +6,19 @@
 #include <sstream>
 #include <fstream>
 #include <cstring>
+#include <functional>
 
 using namespace std;
-
-struct Student
-{
-	string sfirst;
-	string slast;
-	Student(string l, string f) : sfirst(f), slast(l) { }
-};
 
 struct Pair
 {
 	string key;
-	Student value;  
-	Pair(string n="0", string f="F", string l="L") : key(n), value(l,f) { }
+	double value;  
+	Pair(string n="empty", double p=-1.00) : key(n), value(p) { }
 };
 
 
-Pair studentlist[] =
-{
-	Pair("20170936","Bango","Herman"),
-	Pair("20162142","Braun","Edward"),
-	Pair("11269053","Brewer","Ken"),
-	Pair("10548356","Byars","Kathy"),
-	Pair("20150567","Chan","Hong"),
-	Pair("11380053","Chang","Amy"),
-	Pair("20148859","Chaw","Ken Sing"),
-	Pair("20230962","Chia","Qing"),
-	Pair("20217161","Chukhlebov","Alex"),
-	Pair("20132217","Dong","Hung"),
-	Pair("10242737","Facio","Robert"),
-	Pair("10643692","Garcelon","Robert"),
-	Pair("20028675","Grekhov","Chekov"),
-	Pair("11197729","Halley","Berry"),
-	Pair("20169129","Hung Liang","Denny"),
-	Pair("11052122","Jeng","Jeff"),
-	Pair("10128518","Lambright","Lydia"),
-	Pair("20207513","Lee","Frank"),
-	Pair("20232989","Lim","Artimus"),
-	Pair("20194743","Man","Kai"),
-	Pair("20194681","Nguyen","Rammon"),
-	Pair("11182688","Phan","Don"),
-	Pair("20258135","Pine","Stephen"),
-	Pair("20252502","Rosa","Arbute"),
-	Pair("11161078","Shah","Kasam"),
-	Pair("20185646","Shaw","Mian"),
-	Pair("20018772","Tang","Thomas"),
-	Pair("20177176","Tatum","Elphonse"),
-	Pair("20206541","Uppuri","Ron"),
-	Pair("11265973","Wang","Angela"),
-	Pair("11083739","Wang","Shen Ting"),
-	Pair("20054095","Wang","Yu"),
-	Pair("20194002","Wilson","Jack"),
-	Pair("20167765","Wojeck","Vince"),
-	Pair("20112993","Woods","Tiger"),
-	Pair("11255446","Yang","Tang"),
-	Pair("20265054","Yost","Robert"),
-	Pair("20157439","Zhang","Alice"),
-	Pair("20218691","Zuccar","Ben"),
-};
+Pair studentlist[441];
 
 template <typename T>
 class DataSource
@@ -87,12 +40,14 @@ template <typename T>
 class HashTable
 {
 	T* hashTable;
+	T* collStore;
 	int size;
 	int collisions;
 public:
 	HashTable(int number) : size(number), collisions(0)
 	{
 		hashTable = new T[size+1];
+		collStore = new T[size+1];
 	}
 	~HashTable() { delete[] hashTable; }
 	void GetData(vector<T>& vdata)
@@ -108,10 +63,13 @@ public:
 		for (Pair data : vdata)
 		{
 			int index = HashGenerator(data.key);
-			if (hashTable[index].key.compare("0") != 0)
+			if (hashTable[index].key.compare("empty") != 0) {
+				collStore[collisions] = data;
 				collisions++;
+			}
 			hashTable[index] = data;
 		}
+		cout << collisions << endl;
 		return collisions;
 	}
 	double CheckCollisions()
@@ -122,21 +80,11 @@ public:
 	}
 	int HashGenerator(string str)
 	{
-		int hash = 0;
-		vector<int> vlist;
-		for (char c : str)
-			vlist.push_back(c - '0');
-		int multiply = 1;
-		for (int n = 0; n < vlist.size(); n += 2)
-		{
-			int n1 = vlist[n];
-			int n2 = vlist[n + 1];
-			int sum = (n1 + n2) * multiply;
-			hash += sum;
-			multiply *= 10;
-		}
-		hash %= (size - 1);
-		return hash;
+		hash<string> ptr_hash;
+		string hash = to_string(ptr_hash(str));
+		hash = hash.substr(0, 4);
+		cout << atoi(hash.c_str()) << endl;
+		return atoi(hash.c_str());
 	}
 	int HashIndex(string sdata)
 	{
@@ -152,11 +100,17 @@ public:
 		if (index < size)
 		{
 			index++;
-			if (pair.key.compare("0") != 0)
-				cout << pair.value.slast << ", " << pair.value.sfirst << endl;
+			if (pair.key.compare("empty") != 0)
+				cout << pair.key << ", " << pair.value << endl;
 			Traverse(hashTable[index],index);
 		}
 	}
+	void traverseCollisions() {
+		for (int i = 0; i < collisions; i++) {
+			cout << collStore[i].key << ", " << collStore[i].value << endl;
+		}
+	}
+
 	int hashInsert(string key) {
 		int i = 0;
 		while (i != size) {
@@ -192,13 +146,27 @@ public:
 
 int main()
 {
-	int size = sizeof(studentlist) / sizeof(studentlist[0]);
+	int size = 441;
+	string line;
+	ifstream myfile ("UProducts.csv");
+	int count = 0;
+	if (myfile.is_open()) {
+		while (getline(myfile, line)) {
+			string temp[2];
+			istringstream ss(line);
+			getline(ss, temp[0], ',');
+			getline(ss, temp[1], ',');
+			Pair hold (temp[0], atof(temp[1].c_str()));
+			studentlist[count] = hold;
+			count++;
+		}
+	}
+	myfile.close();
 	DataSource<Pair> data(studentlist,size);
-	HashTable<Pair> hashTable(500);
+	HashTable<Pair> hashTable(9999);
 	hashTable.GetData( data.GetData() );
-	string sfindID = "20252502";  // Pair("20252502","Rosa","Arbute"),
-	Pair foundStudent = hashTable.Find(sfindID);
-	cout << foundStudent.value.slast << "\t" << foundStudent.value.sfirst << endl;
+
 	//hashTable.Traverse(hashTable[0],0);
+	hashTable.traverseCollisions();
 	return 0;
 }
