@@ -69,7 +69,6 @@ public:
 			}
 			hashTable[index] = data;
 		}
-		cout << collisions << endl;
 		return collisions;
 	}
 	double CheckCollisions()
@@ -83,7 +82,6 @@ public:
 		hash<string> ptr_hash;
 		string hash = to_string(ptr_hash(str));
 		hash = hash.substr(0, 4);
-		cout << atoi(hash.c_str()) << endl;
 		return atoi(hash.c_str());
 	}
 	int HashIndex(string sdata)
@@ -115,7 +113,7 @@ public:
 		int i = 0;
 		while (i != size) {
 			int j = HashGenerator(key);
-			if (hashTable[j].key.compare("0") == 0) {
+			if (hashTable[j].key.compare("empty") == 0) {
 				hashTable[j] = key;
 				return j;
 			} else {
@@ -129,8 +127,9 @@ public:
 		int i = 0;
 		while (i != size) {
 			int j = HashGenerator(key);
-			if (hashTable[j].key.compare("0") == 0) {
-				hashTable[j] = 0;
+			if (hashTable[j].key.compare("empty") == 0) {
+				hashTable[j].value = -1.00;
+				hashTable[j].key = "deleted";
 				return true;
 			} else {
 				i++;
@@ -166,7 +165,10 @@ int main()
 	HashTable<Pair> hashTable(9999);
 	hashTable.GetData( data.GetData() );
 
-	//hashTable.Traverse(hashTable[0],0);
+	cout << "These are normal items in the hash table: " << endl;
+	hashTable.Traverse(hashTable[0],0);
+
+	cout << "These are conflicted items in the hash table" << endl;
 	hashTable.traverseCollisions();
 	return 0;
 }
