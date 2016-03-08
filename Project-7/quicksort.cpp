@@ -10,6 +10,7 @@
 #include <iomanip>
 #include <fstream>
 #include <cstring>
+#include <vector>
 using namespace std;
 
 #define BLANK " "
@@ -151,5 +152,6 @@ void quickTester()
 int main()
 {
    quickTester();
+   system("pause");
    return 0;
 }  // end main
