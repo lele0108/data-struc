@@ -127,6 +127,7 @@ void insertionSort(T theArray[], int n)
 void quickTester() 
 {
    Product storage[1000];
+   vector<Product> flex_Store; 
    string line;
    ifstream myfile ("UProducts.csv");
    int count = 0;
@@ -137,14 +138,16 @@ void quickTester()
          getline(ss, temp[0], ',');
          getline(ss, temp[1], ',');
          Product hold (temp[0], atof(temp[1].c_str()));
+         flex_Store.push_back(hold);
          storage[count] = hold;
          count++;
       }
    }
    myfile.close();
-   quickSort(storage, 0, count-1);
-   for (int i = 0; i < count; i++) {
-      cout << storage[i] << endl;
+   //quickSort(storage, 0, count-1);
+   for (int i = 0; i < flex_Store.size(); i++) {
+      //cout << storage[i] << endl;
+      cout << flex_Store.at(i) << endl;
    }
 
 }  // end bagTester
