@@ -57,26 +57,30 @@ class Product {
 };
 
 template<typename T>
-int partition(T theArray[], int first, int last)
+int partition(vector<T> & theArray, int first, int last)
 {
-   T x = theArray[last];
+   T x = theArray.at(last);
    int i = first - 1;
    for (int j = first; j < last - 1; j++) {
-      if (theArray[j] <= x) {
+      if (theArray.at(j) <= x) {
          i++;
       }
-      T hold = theArray[i];
-      theArray[i] = theArray[j];
-      theArray[j] = hold;
+      T hold = theArray.at(i);
+      theArray.at(j) = theArray.at(i);
+      //theArray[i] = theArray[j];
+      theArray.at(j) = hold;
+      //theArray[j] = hold;
    }
-   T hold = theArray[i+1];
-   theArray[i+1] = theArray[last];
-   theArray[last] = hold;
+   T hold = theArray.at(i+1);
+   theArray.at(i+1) = theArray.at(last);
+   //theArray[i+1] = theArray[last];
+   theArray.at(last) = hold;
+   //theArray[last] = hold;
    return i+1;
 }  // end quickSort
 
 template<typename T>
-void quickSort(T theArray[], int first, int last)
+void quickSort(vector<T> & theArray, int first, int last)
 {
    if (last - first + 1 < 1000)
    {
@@ -94,7 +98,7 @@ void quickSort(T theArray[], int first, int last)
 }  // end quickSort
 
 template<typename T>
-void insertionSort(T theArray[], int n)
+void insertionSort(vector<T> & theArray, int n)
 {
    // unsorted = first index of the unsorted region,
    // loc = index of insertion in the sorted region,
@@ -109,28 +113,28 @@ void insertionSort(T theArray[], int n)
       // Find the right position (loc) in theArray[0..unsorted]
       // for theArray[unsorted], which is the first entry in the
       // unsorted region; shift, if necessary, to make room
-      T nextItem = theArray[unsorted];
+      T nextItem = theArray.at(unsorted);
       int loc = unsorted;
-      while ((loc > 0) && (theArray[loc - 1] > nextItem))
+      while ((loc > 0) && (theArray.at(loc - 1) > nextItem))
       {
          // Shift theArray[loc - 1] to the right
-         theArray[loc] = theArray[loc - 1];
+         //theArray[loc] = theArray[loc - 1];
+         theArray.at(loc) = theArray.at(loc-1);
          loc--;
       }  // end while
       
       // At this point, theArray[loc] is where nextItem belongs
-      theArray[loc] = nextItem; // Insert nextItem into sorted region
+      //theArray[loc] = nextItem; // Insert nextItem into sorted region
+      theArray.at(loc) = nextItem;
    }  // end for
 }  // end insertionSort
 
 
 void quickTester() 
 {
-   Product storage[1000];
    vector<Product> flex_Store; 
    string line;
    ifstream myfile ("UProducts.csv");
-   int count = 0;
    if (myfile.is_open()) {
       while (getline(myfile, line)) {
          string temp[2];
@@ -139,12 +143,10 @@ void quickTester()
          getline(ss, temp[1], ',');
          Product hold (temp[0], atof(temp[1].c_str()));
          flex_Store.push_back(hold);
-         storage[count] = hold;
-         count++;
       }
    }
    myfile.close();
-   //quickSort(storage, 0, count-1);
+   quickSort(flex_Store, 0, flex_Store.size());
    for (int i = 0; i < flex_Store.size(); i++) {
       //cout << storage[i] << endl;
       cout << flex_Store.at(i) << endl;
