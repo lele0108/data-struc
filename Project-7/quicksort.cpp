@@ -15,6 +15,8 @@ using namespace std;
 
 #define BLANK " "
 
+#define MIN_SIZE 3
+
 class Product {
    private:
       double price;
@@ -58,18 +60,18 @@ class Product {
 
 template<typename T>
 int partition(vector<T> & theArray, int first, int last)
-{
+{  
    T x = theArray.at(last);
-   int i = first - 1;
-   for (int j = first; j < last - 1; j++) {
+   int i = first - 1; // problem this line
+   for (int j = first; j < last; j++) {
       if (theArray.at(j) <= x) {
          i++;
+         T hold = theArray.at(i);
+         theArray.at(i) = theArray.at(j);
+         //theArray[i] = theArray[j];
+         theArray.at(j) = hold;
+         //theArray[j] = hold;
       }
-      T hold = theArray.at(i);
-      theArray.at(j) = theArray.at(i);
-      //theArray[i] = theArray[j];
-      theArray.at(j) = hold;
-      //theArray[j] = hold;
    }
    T hold = theArray.at(i+1);
    theArray.at(i+1) = theArray.at(last);
@@ -82,7 +84,7 @@ int partition(vector<T> & theArray, int first, int last)
 template<typename T>
 void quickSort(vector<T> & theArray, int first, int last)
 {
-   if (last - first + 1 < 1000)
+   if (last - first + 1 < MIN_SIZE)
    {
       insertionSort(theArray, last - first + 1);
    }
@@ -146,7 +148,7 @@ void quickTester()
       }
    }
    myfile.close();
-   quickSort(flex_Store, 0, flex_Store.size());
+   quickSort(flex_Store, 0, flex_Store.size() - 1);
    for (int i = 0; i < flex_Store.size(); i++) {
       //cout << storage[i] << endl;
       cout << flex_Store.at(i) << endl;
