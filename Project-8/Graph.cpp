@@ -92,35 +92,80 @@ public:
 
 void Depth()
 {
-	Vertex v0(0);
-	Vertex v1(1);
-	Vertex v2(2);
-	Vertex v3(3);
-	Graph<int> gdepth(4);
-	gdepth.addEdge(v0, v1);
-	gdepth.addEdge(v0, v2);
-	gdepth.addEdge(v1, v2);
-	gdepth.addEdge(v2, v0);
-	gdepth.addEdge(v2, v3);
-	gdepth.addEdge(v3, v3);
-
+	Vertex SFO(0);
+	Vertex LAX(1);
+	Vertex DFW(2);
+	Vertex ORD(3);
+	Vertex JFK(4);
+	Vertex BOS(5);
+	Vertex MIA(6);
+	Graph<int> gdepth(7);
+	gdepth.addEdge(SFO, BOS);
+	gdepth.addEdge(SFO, LAX);
+	gdepth.addEdge(SFO, DFW);
+	gdepth.addEdge(SFO, ORD);
+	gdepth.addEdge(LAX, SFO);
+	gdepth.addEdge(LAX, MIA);
+	gdepth.addEdge(LAX, DFW);
+	gdepth.addEdge(DFW, SFO);
+	gdepth.addEdge(DFW, LAX);
+	gdepth.addEdge(DFW, MIA);
+	gdepth.addEdge(DFW, ORD);
+	gdepth.addEdge(ORD, SFO);
+	gdepth.addEdge(ORD, DFW);
+	gdepth.addEdge(ORD, JFK);
+	gdepth.addEdge(ORD, BOS);
+	gdepth.addEdge(JFK, ORD);
+	gdepth.addEdge(JFK, BOS);
+	gdepth.addEdge(JFK, MIA);
+	gdepth.addEdge(BOS, SFO);
+	gdepth.addEdge(BOS, ORD);
+	gdepth.addEdge(BOS, JFK);
+	gdepth.addEdge(BOS, MIA);
+	gdepth.addEdge(MIA, BOS);
+	gdepth.addEdge(MIA, JFK);
+	gdepth.addEdge(MIA, DFW);
+	gdepth.addEdge(MIA, LAX);
 	cout << "\nDepth First Traversal" << endl;
 	gdepth.DepthFirstSearch(2);
 }
 
 void Breadth()
 {
-	Vertex v0(0);
-	Vertex v1(1);
-	Vertex v2(2);
-	Vertex v3(3);
-	Graph<Vertex> gbreadth(4);
-	gbreadth.addEdge(v0, v1);
-	gbreadth.addEdge(v0, v2);
-	gbreadth.addEdge(v1, v2);
-	gbreadth.addEdge(v2, v0);
-	gbreadth.addEdge(v2, v3);
-	gbreadth.addEdge(v3, v3);
+	Vertex SFO(0);
+	Vertex LAX(1);
+	Vertex DFW(2);
+	Vertex ORD(3);
+	Vertex JFK(4);
+	Vertex BOS(5);
+	Vertex MIA(6);
+	Graph<Vertex> gbreadth(7);
+	gbreadth.addEdge(SFO, BOS);
+	gbreadth.addEdge(SFO, LAX);
+	gbreadth.addEdge(SFO, DFW);
+	gbreadth.addEdge(SFO, ORD);
+	gbreadth.addEdge(LAX, SFO);
+	gbreadth.addEdge(LAX, MIA);
+	gbreadth.addEdge(LAX, DFW);
+	gbreadth.addEdge(DFW, SFO);
+	gbreadth.addEdge(DFW, LAX);
+	gbreadth.addEdge(DFW, MIA);
+	gbreadth.addEdge(DFW, ORD);
+	gbreadth.addEdge(ORD, SFO);
+	gbreadth.addEdge(ORD, DFW);
+	gbreadth.addEdge(ORD, JFK);
+	gbreadth.addEdge(ORD, BOS);
+	gbreadth.addEdge(JFK, ORD);
+	gbreadth.addEdge(JFK, BOS);
+	gbreadth.addEdge(JFK, MIA);
+	gbreadth.addEdge(BOS, SFO);
+	gbreadth.addEdge(BOS, ORD);
+	gbreadth.addEdge(BOS, JFK);
+	gbreadth.addEdge(BOS, MIA);
+	gbreadth.addEdge(MIA, BOS);
+	gbreadth.addEdge(MIA, JFK);
+	gbreadth.addEdge(MIA, DFW);
+	gbreadth.addEdge(MIA, LAX);
 
 	cout << "\nBreadth First Traversal" << endl;
 	gbreadth.BreadthFirstSearch(2);
