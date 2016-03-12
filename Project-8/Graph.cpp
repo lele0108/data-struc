@@ -45,6 +45,22 @@ public:
 	{
 		adj->Add(v, w);
 	}
+	void DFSHelper(int v, bool* visited) {
+		visited[v] = true;
+		for (auto pos = (*adj)[v].begin(); pos != (*adj)[v].end(); ++pos) {
+			if (!visited[*pos]) {
+				cout << *pos << " ";
+				DFSHelper(*pos, visited);
+			}
+		}
+	}
+	void newDFS(int v) {
+		bool *visited = new bool[adj->getSize()];
+		for (int i = 0; i < adj->getSize(); i++)
+			visited[i] = false;
+
+		DFSHelper(v, visited);
+	}
 	void DFS(int v, bool* visited)
 	{
 		visited[v] = true;
@@ -88,6 +104,29 @@ public:
 			}
 		}
 	}
+	void newBFS(int v) {
+		bool *visited = new bool[adj->getSize()];
+		for (int x = 0; x < adj->getSize(); x++) {
+			visited[x] = false;
+		}
+
+		list<int> queue;
+		visited[v] = true;
+		queue.push_back(v);
+
+		while (!queue.empty()) {
+			v = queue.front();
+			queue.pop_front();
+			for (auto pos = (*adj)[v].begin(); pos != (*adj)[v].end(); ++pos) {
+				if (!visited[*pos]) {
+					visited[*pos] = true;
+					cout << *pos << " ";
+					queue.push_back(*pos);
+				}
+			}
+		}
+		cout << endl;
+	}
 };
 
 void Depth()
@@ -127,7 +166,8 @@ void Depth()
 	gdepth.addEdge(MIA, DFW);
 	gdepth.addEdge(MIA, LAX);
 	cout << "\nDepth First Traversal" << endl;
-	gdepth.DepthFirstSearch(2);
+	//gdepth.DepthFirstSearch(2);
+	gdepth.newDFS(2);
 }
 
 void Breadth()
@@ -168,7 +208,7 @@ void Breadth()
 	gbreadth.addEdge(MIA, LAX);
 
 	cout << "\nBreadth First Traversal" << endl;
-	gbreadth.BreadthFirstSearch(2);
+	gbreadth.newBFS(2);
 }
 
 int main()
