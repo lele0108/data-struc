@@ -1,3 +1,7 @@
+// Jimmy Liu
+// AVL Tree
+// 18 March 2016
+
 #include <stdexcept>
 #include <string>
 #include <iostream>
@@ -21,6 +25,53 @@ public:
 	{
 	}  // end constructor
 }; // end NotFoundException 
+
+template <typename T>
+class BinaryNode
+{
+private:
+	T              item;           // Data portion
+	BinaryNode<T>* leftChildPtr;   // Pointer to left child
+	BinaryNode<T>* rightChildPtr;  // Pointer to right child
+public:
+	BinaryNode() : item(nullptr), leftChildPtr(nullptr), rightChildPtr(nullptr)
+	{
+	}  // end default constructor
+	BinaryNode(const T& anItem) : item(anItem), leftChildPtr(nullptr), rightChildPtr(nullptr)
+	{
+	}  // end constructor
+	BinaryNode(const T& anItem, BinaryNode<T>* leftPtr, BinaryNode<T>* rightPtr) : item(anItem), leftChildPtr(leftPtr), rightChildPtr(rightPtr)
+	{
+	}  // end constructor
+	void setItem(const T& anItem)
+	{
+		item = anItem;
+	}  // end setItem
+	T getItem() const
+	{
+		return item;
+	}  // end getItem
+	bool isLeaf() const
+	{
+		return ((leftChildPtr == nullptr) && (rightChildPtr == nullptr));
+	}
+	void setLeftChildPtr(BinaryNode<T>* leftPtr)
+	{
+		leftChildPtr = leftPtr;
+	}  // end setLeftChildPtr
+	void setRightChildPtr(BinaryNode<T>* rightPtr)
+	{
+		rightChildPtr = rightPtr;
+	}  // end setRightChildPtr
+	BinaryNode<T>* getLeftChildPtr() const
+	{
+		return leftChildPtr;
+	}  // end getLeftChildPtr		
+	BinaryNode<T>* getRightChildPtr() const
+	{
+		return rightChildPtr;
+	}  // end getRightChildPtr		
+}; // end BinaryNode
 
 template <typename T>
 class BinaryTreeInterface
@@ -89,54 +140,10 @@ public:
 	virtual void preorderTraverse(void visit(T&)) const = 0;
 	virtual void inorderTraverse(void visit(T&)) const = 0;
 	virtual void postorderTraverse(void visit(T&)) const = 0;
-}; // end BinaryTreeInterface
 
-template <typename T>
-class BinaryNode
-{
-private:
-	T              item;           // Data portion
-	BinaryNode<T>* leftChildPtr;   // Pointer to left child
-	BinaryNode<T>* rightChildPtr;  // Pointer to right child
-public:
-	BinaryNode() : item(nullptr), leftChildPtr(nullptr), rightChildPtr(nullptr)
-	{
-	}  // end default constructor
-	BinaryNode(const T& anItem) : item(anItem), leftChildPtr(nullptr), rightChildPtr(nullptr)
-	{
-	}  // end constructor
-	BinaryNode(const T& anItem, BinaryNode<T>* leftPtr, BinaryNode<T>* rightPtr) : item(anItem), leftChildPtr(leftPtr), rightChildPtr(rightPtr)
-	{
-	}  // end constructor
-	void setItem(const T& anItem)
-	{
-		item = anItem;
-	}  // end setItem
-	T getItem() const
-	{
-		return item;
-	}  // end getItem
-	bool isLeaf() const
-	{
-		return ((leftChildPtr == nullptr) && (rightChildPtr == nullptr));
-	}
-	void setLeftChildPtr(BinaryNode<T>* leftPtr)
-	{
-		leftChildPtr = leftPtr;
-	}  // end setLeftChildPtr
-	void setRightChildPtr(BinaryNode<T>* rightPtr)
-	{
-		rightChildPtr = rightPtr;
-	}  // end setRightChildPtr
-	BinaryNode<T>* getLeftChildPtr() const
-	{
-		return leftChildPtr;
-	}  // end getLeftChildPtr		
-	BinaryNode<T>* getRightChildPtr() const
-	{
-		return rightChildPtr;
-	}  // end getRightChildPtr		
-}; // end BinaryNode
+	virtual BinaryNode<T>* AVLInsert(BinaryNode<T>* root, const T& newData) = 0;
+	virtual void AVLInorder(BinaryNode<T>* root) = 0;
+}; // end BinaryTreeInterface
 
 template <typename T>
 class BinaryNodeTree : public BinaryTreeInterface<T>
@@ -160,6 +167,82 @@ public:
 			return 1 + getNumberOfNodesHelper(subTreePtr->getLeftChildPtr())
 			+ getNumberOfNodesHelper(subTreePtr->getRightChildPtr());
 	}  // end getNumberOfNodesHelper
+	int AVLHeight(BinaryNode<T>* node) {
+		int h = 0;
+	    if (node != NULL) {
+	        int l = AVLHeight (node->getLeftChildPtr());
+	        int r = AVLHeight (node->getRightChildPtr());
+	        int m = max (l, r);
+	        h = m + 1;
+	    }
+	    return h;
+	}
+	int AVLDiff(BinaryNode<T>* node) {
+		int h = AVLHeight (node->getLeftChildPtr());
+	    int r = AVLHeight (node->getRightChildPtr());
+	    int d = h - r;
+	    return d;
+	}
+	BinaryNode<T>* LLRotation(BinaryNode<T>* node) {
+		BinaryNode<T>* t = node->getLeftChildPtr();
+		node->setLeftChildPtr(t->getRightChildPtr());
+	    t->setRightChildPtr(node);
+	    return t;
+	}
+	BinaryNode<T>* RRRotation(BinaryNode<T>* node) {
+		BinaryNode<T>* t = node->getRightChildPtr();
+		node->setRightChildPtr(t->getLeftChildPtr());
+	    t->setLeftChildPtr(node);
+	    return t;
+	}
+	BinaryNode<T>* LRRotation(BinaryNode<T>* node) {
+		BinaryNode<T>* t = node->getLeftChildPtr();
+		node->setLeftChildPtr(RRRotation(t));
+	    return LLRotation(node);
+	}
+	BinaryNode<T>* RLRotation(BinaryNode<T>* node) {
+		BinaryNode<T>* t = node->getRightChildPtr();
+		node->setRightChildPtr(LLRotation(t));
+	    return RRRotation(node);
+	}
+	BinaryNode<T>* AVLBalance(BinaryNode<T>* node) {
+		int d = AVLDiff(node);
+	    if (d > 1) {
+	        if (AVLDiff(node->getLeftChildPtr()) > 0)
+	            node = LLRotation(node);
+	        else
+	            node = LRRotation (node);
+	    }
+	    else if (d < -1) {
+	        if (AVLDiff(node->getRightChildPtr()) > 0)
+	            node = RLRotation (node);
+	        else
+	            node = RRRotation (node);
+	    }
+	    return node;
+	}
+	BinaryNode<T>* AVLInsert(BinaryNode<T>* root, const T& newData) {
+	    if (root == nullptr) {
+	    	root = new BinaryNode<T>(newData);
+	        return root;
+	    }
+	    else if (newData < root->getItem()) {
+	        root->setLeftChildPtr(AVLInsert(root->getLeftChildPtr(), newData)); 
+	        root = AVLBalance(root);
+	    }
+	    else if (newData >= root->getItem()) {
+	        root->setRightChildPtr(AVLInsert(root->getRightChildPtr(), newData));
+	        root = AVLBalance(root);
+	    }
+	    return root;
+	}
+	void AVLInorder(BinaryNode<T>* root) {
+		if (root == NULL)
+        	return;
+	    AVLInorder (root->getLeftChildPtr());
+	    cout << root->getItem() << "  ";
+	    AVLInorder (root->getRightChildPtr());
+	}
 	BinaryNode<T>* balancedAdd(BinaryNode<T>* subTreePtr, BinaryNode<T>* newNodePtr)
 	{
 		if (subTreePtr == nullptr)
@@ -430,24 +513,26 @@ void check(bool success)
 int main()
 {
 	BinaryTreeInterface<string>* tree1 = new BinaryNodeTree<string>();
+	BinaryNode<string>* root = nullptr;
 	srand(time(NULL));
 
 	for (int i = 0; i < 100; i++) {
 		int random = rand() % 1000 + 1;
-		tree1->add(to_string(random));
+		root = tree1->AVLInsert(root, to_string(random));
 	}
 
-	cout << "Tree 1 Preorder: Should be 10 20 40 70 60 30 50 80\n";
+	/*cout << "Tree 1 Preorder: Should be 10 20 40 70 60 30 50 80\n";
 	tree1->preorderTraverse(display);
 
 	cout << "Tree 1 Inorder: Should be 70 40 20 60 10 50 30 80\n";
 	tree1->inorderTraverse(display);
 
 	cout << "Tree 1 Postorder: Should be 70 40 60 20 50 80 30 10\n";
-	tree1->postorderTraverse(display);
+	tree1->postorderTraverse(display);*/
 
-	cout << "Tree 1 height: " << tree1->getHeight() << endl;
-	cout << "Tree 1 number of nodes: " << tree1->getNumberOfNodes() << endl;
+	cout << "Tree 1 Inorder: \n";
+	tree1->AVLInorder(root);
+	cout << endl;
 
 	return 0;
 }  // end main
